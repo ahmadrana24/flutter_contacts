@@ -122,7 +122,7 @@ class _ContactListPageState extends State<ContactListPage>
         FlutterContacts.openExternalInsert(
           Contact(
             name: Name(first: 'John', last: 'Doe'),
-            phones: [Phone('+1 555-123-4567')],
+            phones: [Phone('+1 555-123-4567', label: PhoneLabel.mobile)],
             emails: [Email('john.doe@gmail.com')],
             addresses: [Address('123 Main St')],
             websites: [Website('https://flutter.dev')],

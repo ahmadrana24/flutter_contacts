@@ -6,10 +6,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('android default contact app', () {
-    final vcfFile =
-        File('test/testdata/vcards/android-default-contact-app.vcf');
-    final jsonFile =
-        File('test/testdata/vcards/android-default-contact-app.json');
+    final vcfFile = File('test/testdata/vcards/android-default-contact-app.vcf');
+    final jsonFile = File('test/testdata/vcards/android-default-contact-app.json');
     final actual = Contact.fromVCard(vcfFile.readAsStringSync()).toJson();
     final expected = json.decode(jsonFile.readAsStringSync());
     expect(actual, expected);
@@ -161,14 +159,14 @@ void main() {
       'END:VCARD',
     ].join('\n'));
     expect(contact.phones, [
-      Phone('555-111-1111'),
-      Phone('555-222-2222'),
-      Phone('555-333-3333;333'),
+      Phone('555-111-1111', label: PhoneLabel.mobile),
+      Phone('555-222-2222', label: PhoneLabel.mobile),
+      Phone('555-333-3333;333', label: PhoneLabel.mobile),
       Phone('555-444-4444', label: PhoneLabel.pager),
       Phone('555-555-5555', label: PhoneLabel.work, isPrimary: true),
       Phone('555-666-6666', label: PhoneLabel.faxOther),
       Phone('555-777-7777', label: PhoneLabel.main, isPrimary: true),
-      Phone('555-888-8888', isPrimary: true),
+      Phone('555-888-8888', isPrimary: true, label: PhoneLabel.mobile),
       Phone('555-999-9999', label: PhoneLabel.iPhone),
     ]);
   });
@@ -314,12 +312,7 @@ void main() {
     expect(contact.events, [
       Event(year: null, month: 1, day: 21, label: EventLabel.anniversary),
       Event(year: null, month: 2, day: 22, label: EventLabel.other),
-      Event(
-          year: null,
-          month: 3,
-          day: 23,
-          label: EventLabel.custom,
-          customLabel: 'Custom Event'),
+      Event(year: null, month: 3, day: 23, label: EventLabel.custom, customLabel: 'Custom Event'),
     ]);
   });
 

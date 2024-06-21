@@ -11,12 +11,9 @@ import 'package:flutter_contacts/properties/social_media.dart';
 import 'package:flutter_contacts/properties/website.dart';
 
 final _dateRegexp = RegExp(r'^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|30|31)$');
-final _noYearDateRegexp =
-    RegExp(r'^--(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|30|31)$');
-final _dateNoDashRegexp =
-    RegExp(r'^\d{4}(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|30|31)$');
-final _noYearDateNoDashRegexp =
-    RegExp(r'^--(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|30|31)$');
+final _noYearDateRegexp = RegExp(r'^--(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|30|31)$');
+final _dateNoDashRegexp = RegExp(r'^\d{4}(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|30|31)$');
+final _noYearDateNoDashRegexp = RegExp(r'^--(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|30|31)$');
 
 class Param {
   final String key;
@@ -28,8 +25,7 @@ class Param {
   String toString() => '$key => $value';
 }
 
-String vCardEncode(String s) =>
-    s.replaceAll(',', '\\,').replaceAll(';', '\\;').replaceAll('\n', '\\n');
+String vCardEncode(String s) => s.replaceAll(',', '\\,').replaceAll(';', '\\;').replaceAll('\n', '\\n');
 
 class VCardParser {
   String encode(String s) => s
@@ -81,8 +77,7 @@ class VCardParser {
       }
 
       // https://mathematica.stackexchange.com/questions/111637/importing-a-vcf-file-with-quoted-printable-encoding
-      if (params
-          .any((p) => p.key == 'ENCODING' && p.value == 'QUOTED-PRINTABLE')) {
+      if (params.any((p) => p.key == 'ENCODING' && p.value == 'QUOTED-PRINTABLE')) {
         content = Uri.decodeFull(content.replaceAll('=', '%'));
       }
 
@@ -90,9 +85,7 @@ class VCardParser {
       if (group.isNotEmpty) {
         final relatedLines = lines.where((x) => x.startsWith(group));
         for (final related in relatedLines) {
-          if (related
-              .toUpperCase()
-              .startsWith('${group.toUpperCase()}.X-ABLABEL:')) {
+          if (related.toUpperCase().startsWith('${group.toUpperCase()}.X-ABLABEL:')) {
             final label = related.split(':').last;
             if (label.startsWith('_\$!<') && label.endsWith('>!\$_')) {
               labelOverride = label.substring(4, label.length - 4);
@@ -146,14 +139,12 @@ class VCardParser {
           // example "tel:+1-555-555-5555;ext=5555". In such cases we denote the
           // extension with a ';' – see https://www.lifewire.com/automatically-dialing-extensions-on-android-577619
           Phone phone;
-          final number =
-              content.startsWith('tel:') ? content.substring(4) : content;
+          final number = content.startsWith('tel:') ? content.substring(4) : content;
           final numberParts = number.split(';ext=');
           if (numberParts.length == 2) {
-            phone =
-                Phone('${decode(numberParts[0])};${decode(numberParts[1])}');
+            phone = Phone('${decode(numberParts[0])};${decode(numberParts[1])}', label: PhoneLabel.mobile);
           } else {
-            phone = Phone(decode(numberParts[0]));
+            phone = Phone(decode(numberParts[0]), label: PhoneLabel.mobile);
           }
           _parseLabel(params, labelOverride, _parsePhoneLabel, phone);
           contact.phones.add(phone);
@@ -171,8 +162,7 @@ class VCardParser {
             continue; // invalid line
           }
           var address = Address('');
-          if (([addressParts[0]] + addressParts.sublist(3))
-              .any((x) => x.isNotEmpty)) {
+          if (([addressParts[0]] + addressParts.sublist(3)).any((x) => x.isNotEmpty)) {
             address.pobox = decode(addressParts[0]);
             address.street = decode(addressParts[2]);
             address.city = decode(addressParts[3]);
@@ -180,8 +170,7 @@ class VCardParser {
             address.postalCode = decode(addressParts[5]);
             address.country = decode(addressParts[6]);
           }
-          address.address =
-              addressParts.map(decode).where((x) => x.isNotEmpty).join(' ');
+          address.address = addressParts.map(decode).where((x) => x.isNotEmpty).join(' ');
           _parseLabel(params, labelOverride, _parseAddressLabel, address);
           contact.addresses.add(address);
           break;
@@ -223,23 +212,16 @@ class VCardParser {
             continue; // invalid line
           }
           final serviceTypes = params.where((p) => p.key == 'X-SERVICE-TYPE');
-          final protocol = decode(serviceTypes.isNotEmpty
-              ? serviceTypes.first.value!
-              : contentParts[0]);
+          final protocol = decode(serviceTypes.isNotEmpty ? serviceTypes.first.value! : contentParts[0]);
           // ICQ gets duplicated into an ICQ and an AIM line due to a bug:
           // https://discussions.apple.com/thread/2769242
-          if (serviceTypes.isNotEmpty &&
-              serviceTypes.first.value == 'ICQ' &&
-              contentParts[0] == 'aim') {
+          if (serviceTypes.isNotEmpty && serviceTypes.first.value == 'ICQ' && contentParts[0] == 'aim') {
             continue;
           }
           final userName = decode(contentParts[1]);
-          final label =
-              lowerCaseStringToSocialMediaLabel[protocol.toLowerCase()] ??
-                  SocialMediaLabel.custom;
+          final label = lowerCaseStringToSocialMediaLabel[protocol.toLowerCase()] ?? SocialMediaLabel.custom;
           final customLabel = label == SocialMediaLabel.custom ? protocol : '';
-          contact.socialMedias.add(
-              SocialMedia(userName, label: label, customLabel: customLabel));
+          contact.socialMedias.add(SocialMedia(userName, label: label, customLabel: customLabel));
           break;
         case 'X-SOCIALPROFILE':
           // On iOS social profiles are different from instant messaging, and
@@ -260,17 +242,13 @@ class VCardParser {
               break;
             }
           }
-          final label =
-              lowerCaseStringToSocialMediaLabel[protocol.toLowerCase()] ??
-                  SocialMediaLabel.custom;
+          final label = lowerCaseStringToSocialMediaLabel[protocol.toLowerCase()] ?? SocialMediaLabel.custom;
           final customLabel = label == SocialMediaLabel.custom ? protocol : '';
-          contact.socialMedias.add(
-              SocialMedia(userName, label: label, customLabel: customLabel));
+          contact.socialMedias.add(SocialMedia(userName, label: label, customLabel: customLabel));
           break;
         case 'BDAY':
         case 'ANNIVERSARY':
-          final label =
-              op == 'BDAY' ? EventLabel.birthday : EventLabel.anniversary;
+          final label = op == 'BDAY' ? EventLabel.birthday : EventLabel.anniversary;
           final date = decode(content);
           final omitYear = params.any((p) => p.key == 'X-APPLE-OMIT-YEAR');
           _tryAddEvent(contact, date, label, '', omitYear);
@@ -301,9 +279,7 @@ class VCardParser {
               } else if (labelStr == '1') {
                 label = EventLabel.anniversary;
               }
-              final customLabel = n >= 4 && label == EventLabel.custom
-                  ? decode(contentParts[3])
-                  : '';
+              final customLabel = n >= 4 && label == EventLabel.custom ? decode(contentParts[3]) : '';
               _tryAddEvent(contact, date, label, customLabel, false);
               break;
             case 'vnd.android.cursor.item/nickname':
@@ -312,36 +288,28 @@ class VCardParser {
           }
           break;
         case 'X-AIM':
-          contact.socialMedias
-              .add(SocialMedia(decode(content), label: SocialMediaLabel.aim));
+          contact.socialMedias.add(SocialMedia(decode(content), label: SocialMediaLabel.aim));
           break;
         case 'X-MSN':
-          contact.socialMedias
-              .add(SocialMedia(decode(content), label: SocialMediaLabel.msn));
+          contact.socialMedias.add(SocialMedia(decode(content), label: SocialMediaLabel.msn));
           break;
         case 'X-YAHOO':
-          contact.socialMedias
-              .add(SocialMedia(decode(content), label: SocialMediaLabel.yahoo));
+          contact.socialMedias.add(SocialMedia(decode(content), label: SocialMediaLabel.yahoo));
           break;
         case 'X-SKYPE-USERNAME':
-          contact.socialMedias
-              .add(SocialMedia(decode(content), label: SocialMediaLabel.skype));
+          contact.socialMedias.add(SocialMedia(decode(content), label: SocialMediaLabel.skype));
           break;
         case 'X-QQ':
-          contact.socialMedias.add(
-              SocialMedia(decode(content), label: SocialMediaLabel.qqchat));
+          contact.socialMedias.add(SocialMedia(decode(content), label: SocialMediaLabel.qqchat));
           break;
         case 'X-GOOGLE-TALK':
-          contact.socialMedias.add(
-              SocialMedia(decode(content), label: SocialMediaLabel.googleTalk));
+          contact.socialMedias.add(SocialMedia(decode(content), label: SocialMediaLabel.googleTalk));
           break;
         case 'X-ICQ':
-          contact.socialMedias
-              .add(SocialMedia(decode(content), label: SocialMediaLabel.icq));
+          contact.socialMedias.add(SocialMedia(decode(content), label: SocialMediaLabel.icq));
           break;
         case 'X-JABBER':
-          contact.socialMedias.add(
-              SocialMedia(decode(content), label: SocialMediaLabel.jabber));
+          contact.socialMedias.add(SocialMedia(decode(content), label: SocialMediaLabel.jabber));
           break;
         case 'X-PHONETIC-FIRST-NAME':
           contact.name.firstPhonetic = decode(content);
@@ -411,12 +379,8 @@ void _tryAddEvent(
   } else {
     final dt = DateTime.tryParse(date);
     if (dt != null) {
-      contact.events.add(Event(
-          year: omitYear ? null : dt.year,
-          month: dt.month,
-          day: dt.day,
-          label: label,
-          customLabel: customLabel));
+      contact.events.add(
+          Event(year: omitYear ? null : dt.year, month: dt.month, day: dt.day, label: label, customLabel: customLabel));
     }
   }
 }
@@ -582,11 +546,10 @@ void _parseLabel<T>(
   } else {
     for (final param in params) {
       if (param.key == 'TYPE') {
-        final types =
-            (param.value!.startsWith('"') && param.value!.endsWith('"')
-                    ? param.value!.substring(1, param.value!.length - 1)
-                    : param.value)!
-                .split(',');
+        final types = (param.value!.startsWith('"') && param.value!.endsWith('"')
+                ? param.value!.substring(1, param.value!.length - 1)
+                : param.value)!
+            .split(',');
         for (final type in types) {
           parseFunction(type, property, false);
         }

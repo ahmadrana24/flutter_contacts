@@ -223,7 +223,7 @@ class _EditContactPageState extends State<EditContactPage>
   Card _phoneCard() => _fieldCard(
         'Phones',
         _contact.phones,
-        () => _contact.phones = _contact.phones + [Phone('')],
+        () => _contact.phones = _contact.phones + [Phone('', label: PhoneLabel.mobile)],
         (int i, dynamic p) => PhoneForm(
           p,
           onUpdate: (phone) => _contact.phones[i] = phone,

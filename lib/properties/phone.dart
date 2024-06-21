@@ -23,7 +23,7 @@ class Phone {
   Phone(
     this.number, {
     this.normalizedNumber = '',
-    this.label = PhoneLabel.mobile,
+    required this.label,
     this.customLabel = '',
     this.isPrimary = false,
   });
@@ -31,8 +31,7 @@ class Phone {
   factory Phone.fromJson(Map<String, dynamic> json) => Phone(
         (json['number'] as String?) ?? '',
         normalizedNumber: (json['normalizedNumber'] as String?) ?? '',
-        label: _stringToPhoneLabel[json['label'] as String? ?? ''] ??
-            PhoneLabel.mobile,
+        label: _stringToPhoneLabel[json['label'] as String]!,
         customLabel: (json['customLabel'] as String?) ?? '',
         isPrimary: (json['isPrimary'] as bool?) ?? false,
       );
@@ -47,11 +46,7 @@ class Phone {
 
   @override
   int get hashCode =>
-      number.hashCode ^
-      normalizedNumber.hashCode ^
-      label.hashCode ^
-      customLabel.hashCode ^
-      isPrimary.hashCode;
+      number.hashCode ^ normalizedNumber.hashCode ^ label.hashCode ^ customLabel.hashCode ^ isPrimary.hashCode;
 
   @override
   bool operator ==(Object o) =>
@@ -63,8 +58,7 @@ class Phone {
       o.isPrimary == isPrimary;
 
   @override
-  String toString() =>
-      'Phone(number=$number, normalizedNumber=$normalizedNumber, label=$label, '
+  String toString() => 'Phone(number=$number, normalizedNumber=$normalizedNumber, label=$label, '
       'customLabel=$customLabel, isPrimary=$isPrimary)';
 
   List<String> toVCard() {

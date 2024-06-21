@@ -29,7 +29,7 @@ void main() {
     final newContact = Contact()
       ..name = Name(first: 'John', last: 'Doe')
       ..phones = [
-        Phone('555-123-4567'),
+        Phone('555-123-4567',label: PhoneLabel.mobile),
         Phone('555-999-9999', label: PhoneLabel.work)
       ];
     final returnedContact = await newContact.insert();
