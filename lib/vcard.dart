@@ -455,6 +455,9 @@ void _parseEmailLabel(String label, Email email, bool defaultToCustom) {
     case 'HOME':
       email.label = EmailLabel.home;
       break;
+    case 'SCHOOL':
+      email.label = EmailLabel.home;
+      break;
     case 'MOBILE':
     case 'CELL':
       email.label = EmailLabel.mobile;
