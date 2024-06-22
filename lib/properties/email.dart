@@ -26,8 +26,7 @@ class Email {
 
   factory Email.fromJson(Map<String, dynamic> json) => Email(
         (json['address'] as String?) ?? '',
-        label: _stringToEmailLabel[json['label'] as String? ?? ''] ??
-            EmailLabel.home,
+        label: _stringToEmailLabel[json['label'] as String? ?? ''] ?? EmailLabel.home,
         customLabel: (json['customLabel'] as String?) ?? '',
         isPrimary: (json['isPrimary'] as bool?) ?? false,
       );
@@ -40,11 +39,7 @@ class Email {
       };
 
   @override
-  int get hashCode =>
-      address.hashCode ^
-      label.hashCode ^
-      customLabel.hashCode ^
-      isPrimary.hashCode;
+  int get hashCode => address.hashCode ^ label.hashCode ^ customLabel.hashCode ^ isPrimary.hashCode;
 
   @override
   bool operator ==(Object o) =>
@@ -55,8 +50,7 @@ class Email {
       o.isPrimary == isPrimary;
 
   @override
-  String toString() =>
-      'Email(address=$address, label=$label, customLabel=$customLabel, '
+  String toString() => 'Email(address=$address, label=$label, customLabel=$customLabel, '
       'isPrimary=$isPrimary)';
 
   List<String> toVCard() {
@@ -72,6 +66,9 @@ class Email {
           break;
         case EmailLabel.work:
           s += ';TYPE=work';
+          break;
+        case EmailLabel.school:
+          s += ';TYPE=school';
           break;
         default:
       }
