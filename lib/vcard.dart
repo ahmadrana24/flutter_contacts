@@ -140,6 +140,7 @@ class VCardParser {
           // extension with a ';' – see https://www.lifewire.com/automatically-dialing-extensions-on-android-577619
           Phone phone;
           final number = content.startsWith('tel:') ? content.substring(4) : content;
+          print(content.split(';'));
           final numberParts = number.split(';ext=');
           if (numberParts.length == 2) {
             phone = Phone('${decode(numberParts[0])};${decode(numberParts[1])}', label: PhoneLabel.mobile);
